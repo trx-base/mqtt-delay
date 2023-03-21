@@ -9,6 +9,17 @@ steps:
       - gradle build
       - gradle koverReport
 
+  - name: publish
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo: trxbase/mqtt-delay
+      tags:
+        - latest
+
 
 
 
