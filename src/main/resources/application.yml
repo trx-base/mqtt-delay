@@ -1,0 +1,8 @@
+micronaut:
+  application:
+    name: mqtt-delay
+
+mqtt:
+  serverURI: tcp://public.trxbroker.org:1883
+  clientId: ${random.shortuuid}
+  topic: delay_dev

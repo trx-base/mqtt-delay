@@ -1,0 +1,21 @@
+version: '3.7'
+
+networks:
+  default:
+    name: traefik-default
+
+services:
+  mqtt-delay:
+    image: trxbase/mqtt-delay:latest
+    container_name: $COMPOSE_PROJECT_NAME
+    restart: unless-stopped
+    environment:
+      - MICRONAUT_CONFIG_FILES=/application.yml
+    volumes:
+      - "./application.yml:/application.yml:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.$COMPOSE_PROJECT_NAME.rule=Host(`$DOMAIN`)"
+      - "traefik.http.routers.$COMPOSE_PROJECT_NAME.entrypoints=https"
+      - "traefik.http.routers.$COMPOSE_PROJECT_NAME.tls.certresolver=letsencrypt"
+      - "traefik.http.services.$COMPOSE_PROJECT_NAME.loadbalancer.server.port=8080"
