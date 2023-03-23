@@ -7,7 +7,7 @@ import mu.KLogging
 import org.eclipse.paho.mqttv5.client.IMqttAsyncClient
 import org.eclipse.paho.mqttv5.client.MqttAsyncClient
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptionsBuilder
-import org.eclipse.paho.mqttv5.client.persist.MqttDefaultFilePersistence
+import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence
 
 @Factory
 class MqttBeanFactory {
@@ -22,16 +22,19 @@ class MqttBeanFactory {
         logger.info { "Creating connection to MQTT Broker, serverURI: ${mqttConfig.serverURI}, topic: $${mqttConfig.topic}" }
         val client = createClient()
         logger.info { "Connecting clientId: ${client.clientId}" }
-        val mqttConnectionOptions = MqttConnectionOptionsBuilder().cleanStart(true).automaticReconnect(true).build()
+        val mqttConnectionOptions =
+            MqttConnectionOptionsBuilder().cleanStart(true).automaticReconnect(true).username(mqttConfig.username)
+                .password(mqttConfig.password?.toByteArray())
+                .build()
         client.connect(mqttConnectionOptions).waitForCompletion()
         logger.info { "MQTT Broker connected." }
         return client
     }
 
     fun createClient(): MqttAsyncClient {
-        val mqttDefaultFilePersistence = MqttDefaultFilePersistence("mqtt-persistence")
+        val mqttPersistence = MemoryPersistence()
         val clientId = generateUniqueClientId()
-        return MqttAsyncClient(mqttConfig.serverURI, clientId, mqttDefaultFilePersistence)
+        return MqttAsyncClient(mqttConfig.serverURI, clientId, mqttPersistence)
     }
 
     private fun generateUniqueClientId(): String {

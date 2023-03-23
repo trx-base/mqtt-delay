@@ -111,7 +111,6 @@ class DevelopmentIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun shouldUseNewFormatForDelay() {
-        val delayedTopic = "please/delay/me"
         val messageArrived = CompletableFutureWithCounter<String>()
         mqttClient.subscribe(
             delayedTopic,

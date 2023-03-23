@@ -17,7 +17,7 @@ abstract class AbstractIntegrationTest {
 
     @BeforeEach
     fun setUp() {
-        delayedTopic = "integration/test/topic/" + UUID.randomUUID().toString() // Prevents flaky tests.
+        delayedTopic = "integration-test/target/topic/" + UUID.randomUUID().toString() // Prevents flaky tests.
     }
 
     fun expectMessage(topic: String): CompletableFutureWithCounter<MqttMessage> {

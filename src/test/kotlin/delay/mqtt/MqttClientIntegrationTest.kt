@@ -17,6 +17,9 @@ class MqttClientIntegrationTest {
     @Inject
     lateinit var mqttClient: MqttClient
 
+    @Inject
+    lateinit var mqttConfig: MqttConfig
+
     @Test
     fun shouldHaveConnectedClient_whenConnect() {
         assertThat(mqttClient.instance.isConnected).isTrue()
@@ -25,18 +28,18 @@ class MqttClientIntegrationTest {
     @Test
     fun shouldUseConfig_whenConnectingMqtt() {
         assertThat(mqttClient.instance.serverURI).isEqualTo("tcp://public.trxbroker.org:1883")
-        assertThat(mqttClient.instance.clientId).startsWith("delay_test")
+        assertThat(mqttClient.instance.clientId).startsWith("integration-test/delay_test")
     }
 
     @Test
     fun shouldReceiveMessage_whenSubscribeThenPublish() {
-        val topic = "shouldReceiveMessage_whenSubscribeThenPublish"
+        val topic = "${mqttConfig.topic}/shouldReceiveMessage_whenSubscribeThenPublish"
         val expectedCall = CompletableFuture<String>()
         mqttClient.subscribe(
             topic,
             0,
         ) { sTopic, message ->
-            expectedCall.complete("$sTopic - $message")
+            expectedCall.complete("$message")
         }
         mqttClient.publish(topic, MqttMessage("expectedMessage".toByteArray()))
         assertThat(
@@ -44,6 +47,6 @@ class MqttClientIntegrationTest {
                 1,
                 TimeUnit.SECONDS,
             ),
-        ).isEqualTo("shouldReceiveMessage_whenSubscribeThenPublish - expectedMessage")
+        ).isEqualTo("expectedMessage")
     }
 }
