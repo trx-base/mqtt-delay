@@ -3,6 +3,8 @@ micronaut:
     name: mqtt-delay
 
 mqtt:
-  serverURI: tcp://public.trxbroker.org:1883
-  clientId: delay-${random.shortuuid}
-  topic: delay
+  serverURI: tcp://mqtt.example.com:1883
+  clientId: delayed
+  topic: delayed
+  username: username
+  password: password
