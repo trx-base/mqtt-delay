@@ -16,3 +16,4 @@ out/
 .lck
 .env
 mqtt-persistence
+docker-compose/application.yml
