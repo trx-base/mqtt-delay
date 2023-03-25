@@ -8,6 +8,7 @@ import org.eclipse.paho.mqttv5.client.IMqttAsyncClient
 import org.eclipse.paho.mqttv5.client.MqttAsyncClient
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptionsBuilder
 import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence
+import java.util.*
 
 @Factory
 class MqttBeanFactory {
@@ -38,6 +39,6 @@ class MqttBeanFactory {
     }
 
     private fun generateUniqueClientId(): String {
-        return mqttConfig.topic + "_" + mqttConfig.clientId
+        return "mqtt-delay_" + UUID.randomUUID().toString()
     }
 }

@@ -5,7 +5,6 @@ import assertk.assertions.hasSize
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import org.junit.jupiter.api.Test
-import java.util.*
 
 @MicronautTest
 class MqttBeanFactoryIntegrationTest {
@@ -18,7 +17,6 @@ class MqttBeanFactoryIntegrationTest {
         val clientIdSet = mutableSetOf<String>()
 
         for (i in 1..5) {
-            mqttBeanFactory.mqttConfig.clientId = UUID.randomUUID().toString()
             clientIdSet.add(mqttBeanFactory.mqttAsyncClient().clientId)
         }
         assertThat(clientIdSet).hasSize(5)

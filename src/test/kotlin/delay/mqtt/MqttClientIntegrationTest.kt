@@ -28,7 +28,7 @@ class MqttClientIntegrationTest {
     @Test
     fun shouldUseConfig_whenConnectingMqtt() {
         assertThat(mqttClient.instance.serverURI).isEqualTo("tcp://public.trxbroker.org:1883")
-        assertThat(mqttClient.instance.clientId).startsWith("integration-test/delay_test")
+        assertThat(mqttClient.instance.clientId).startsWith("mqtt-delay")
     }
 
     @Test

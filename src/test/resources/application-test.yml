@@ -1,5 +1,5 @@
 mqtt:
-  topic: integration-test/delay_test-${random.shortuuid}
+  topic: integration-test/delayed_test-${random.shortuuid}
   username: integration-test
   password: ZRZh22GsL9KTLySg
 
