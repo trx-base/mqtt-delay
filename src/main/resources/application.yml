@@ -4,4 +4,5 @@ micronaut:
 
 mqtt:
   serverURI: tcp://public.trxbroker.org:1883
+  clientId: mqtt-delay_${random.shortuuid}
   topic: delayed_dev

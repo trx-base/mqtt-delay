@@ -22,13 +22,13 @@ class MqttClientIntegrationTest {
 
     @Test
     fun shouldHaveConnectedClient_whenConnect() {
-        assertThat(mqttClient.instance.isConnected).isTrue()
+        assertThat(mqttClient.mqttAsyncClient.isConnected).isTrue()
     }
 
     @Test
     fun shouldUseConfig_whenConnectingMqtt() {
-        assertThat(mqttClient.instance.serverURI).isEqualTo("tcp://public.trxbroker.org:1883")
-        assertThat(mqttClient.instance.clientId).startsWith("mqtt-delay")
+        assertThat(mqttClient.mqttAsyncClient.serverURI).isEqualTo("tcp://public.trxbroker.org:1883")
+        assertThat(mqttClient.mqttAsyncClient.clientId).startsWith("mqtt-delay")
     }
 
     @Test
