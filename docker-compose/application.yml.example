@@ -4,6 +4,7 @@ micronaut:
 
 mqtt:
   serverURI: tcp://mqtt.example.com:1883
+  clientId: mqtt-delay_${random.shortuuid}
   topic: delayed
   username: username
   password: password
