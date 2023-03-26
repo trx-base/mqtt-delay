@@ -54,6 +54,12 @@ class MqttClientTest {
     }
 
     @Test
+    fun shouldConnect_whenPostconstruct() {
+        mqttClient.postConstruct()
+        verify { mqttClient.connect() }
+    }
+
+    @Test
     fun shouldNotSetUserNameAndPassword_whenNotGivenInConfig() {
         every { mqttConfig.username } returns null
         every { mqttConfig.password } returns null
@@ -138,5 +144,14 @@ class MqttClientTest {
         mqttClient.connectComplete(false, "tcp://example.com")
 
         verify(exactly = 0) { iMqttAsyncClient.subscribe(capture(slot), null, null, expectedCallback, any()) }
+    }
+
+    @Test
+    fun shouldNotFail_whenEventsTriggered() {
+        mqttClient.disconnected(null)
+        mqttClient.mqttErrorOccurred(null)
+        mqttClient.messageArrived(null, null)
+        mqttClient.deliveryComplete(null)
+        mqttClient.authPacketArrived(0, null)
     }
 }

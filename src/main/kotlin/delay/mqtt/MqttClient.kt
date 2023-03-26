@@ -64,15 +64,15 @@ class MqttClient : MqttCallback {
     }
 
     override fun messageArrived(topic: String?, message: MqttMessage?) {
-        logger.debug { "Message arrived: $message" }
+        logger.debug("Message arrived: $message")
     }
 
     override fun deliveryComplete(token: IMqttToken?) {
-        logger.debug { "Delivery complete." }
+        logger.debug("Delivery complete.")
     }
 
     override fun connectComplete(reconnect: Boolean, serverURI: String?) {
-        logger.warn { "Connection complete. reconnect: $reconnect, serverURI: $serverURI" }
+        logger.warn("Connection complete. reconnect: $reconnect, serverURI: $serverURI")
         if (reconnect) {
             logger.info { "Re-subscribe subscriptions: $subscriptions" }
             for (sub in subscriptions) {
@@ -82,7 +82,7 @@ class MqttClient : MqttCallback {
     }
 
     override fun authPacketArrived(reasonCode: Int, properties: MqttProperties?) {
-        logger.debug { "Auth packet arrived. reasonCode: $reasonCode, properties: $properties" }
+        logger.debug("Auth packet arrived. reasonCode: $reasonCode, properties: $properties")
     }
 
     private fun mqttProperties(): MqttProperties {

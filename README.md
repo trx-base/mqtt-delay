@@ -28,7 +28,7 @@ here: https://github.com/trx-base/traefik-docker-compose
 ## Build
 
 * **Build**: `./gradlew clean build`
-* **Code coverage report**: `./gradlew koverVerify` - Report can be found at `build/reports/kover/html/index.html`
+* **Code coverage report**: `./gradlew koverReport` - Report can be found at `build/reports/kover/html/index.html`
 
 ## Subscriber
 

@@ -38,7 +38,7 @@ class MqttClientIntegrationTest {
         mqttClient.subscribe(
             topic,
             0,
-        ) { sTopic, message ->
+        ) { _, message ->
             expectedCall.complete("$message")
         }
         mqttClient.publish(topic, MqttMessage("expectedMessage".toByteArray()))
