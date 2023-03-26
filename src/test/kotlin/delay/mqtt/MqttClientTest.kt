@@ -1,19 +1,24 @@
 package delay.mqtt
 
 import assertk.assertThat
+import assertk.assertions.containsOnly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.impl.annotations.SpyK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.eclipse.paho.mqttv5.client.IMqttAsyncClient
+import org.eclipse.paho.mqttv5.client.IMqttMessageListener
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptions
 import org.eclipse.paho.mqttv5.common.MqttMessage
+import org.eclipse.paho.mqttv5.common.MqttSubscription
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -21,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class MqttClientTest {
 
     @InjectMockKs
+    @SpyK
     var mqttClient = MqttClient()
 
     @RelaxedMockK
@@ -73,5 +79,64 @@ class MqttClientTest {
 
         assertThat(slot.captured.userName).isEqualTo("expectedUsername")
         assertThat(slot.captured.password).isEqualTo("expectedPassword".toByteArray())
+    }
+
+    @Test
+    fun shouldRememberSubscription_whenSubscribe() {
+        val expectedMessageListener = mockk<IMqttMessageListener>()
+
+        mqttClient.subscribe("expected/topic/1", 1, expectedMessageListener)
+        mqttClient.subscribe("expected/topic/2", 2, expectedMessageListener)
+        assertThat(
+            mqttClient.subscriptions.map { sub -> Triple(sub.first.topic, sub.first.qos, sub.second) }
+                .toSet(),
+        ).containsOnly(
+            Triple("expected/topic/1", 1, expectedMessageListener),
+            Triple("expected/topic/2", 2, expectedMessageListener),
+        )
+    }
+
+    @Test
+    fun shouldSubscribeWithAsyncClient_whenSubscribe() {
+        val expectedCallback = mockk<IMqttMessageListener>()
+
+        val slot = slot<MqttSubscription>()
+
+        mqttClient.subscribe("expected/topic/1", 1, expectedCallback)
+
+        verify { iMqttAsyncClient.subscribe(capture(slot), null, null, expectedCallback, any()) }
+        assertThat(slot.captured.topic).isEqualTo("expected/topic/1")
+        assertThat(slot.captured.qos).isEqualTo(1)
+    }
+
+    @Test
+    fun shouldSubscribeAgain_whenConnectComplete_andGivenMultipleSubscriptions() {
+        val expectedCallback = mockk<IMqttMessageListener>()
+
+        val slot = mutableListOf<MqttSubscription>()
+
+        mqttClient.subscribe("expected/topic/1", 1, expectedCallback)
+        mqttClient.subscribe("expected/topic/2", 2, expectedCallback)
+        clearAllMocks()
+
+        mqttClient.connectComplete(true, "tcp://example.com")
+
+        verify { iMqttAsyncClient.subscribe(capture(slot), null, null, expectedCallback, any()) }
+        assertThat(slot.count()).isEqualTo(2)
+    }
+
+    @Test
+    fun shouldNotSubscribeAgain_whenConnectComplete_andNotReconnect() {
+        val expectedCallback = mockk<IMqttMessageListener>()
+
+        val slot = mutableListOf<MqttSubscription>()
+
+        mqttClient.subscribe("expected/topic/1", 1, expectedCallback)
+        mqttClient.subscribe("expected/topic/2", 2, expectedCallback)
+        clearAllMocks()
+
+        mqttClient.connectComplete(false, "tcp://example.com")
+
+        verify(exactly = 0) { iMqttAsyncClient.subscribe(capture(slot), null, null, expectedCallback, any()) }
     }
 }
