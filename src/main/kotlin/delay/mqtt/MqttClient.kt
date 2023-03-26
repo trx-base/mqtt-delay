@@ -40,6 +40,7 @@ class MqttClient : MqttCallback {
                 .password(mqttConfig.password?.toByteArray())
                 .build()
         mqttAsyncClient.connect(mqttConnectionOptions).waitForCompletion()
+        mqttAsyncClient.setCallback(this)
         logger.info { "MQTT Broker connected." }
     }
 

@@ -24,13 +24,13 @@ class SubscriptionService {
 
     @PostConstruct
     fun registerSubscriptions() {
-        logger.info { "Registering subscriptions" }
+        logger.info { "Registering subscriptions." }
         mqttClient.subscribe("${mqttConfig.topic}/#", 2, this::handleDelayedMessage)
         mqttClient.subscribe("+/${mqttConfig.topic}/#", 2, this::handleDelayedMessage)
     }
 
     fun handleDelayedMessage(topic: String, mqttMessage: MqttMessage) {
-        logger.info { "topic: $topic, mqttMessage: ${mqttMessage.toDebugString()}" }
+        logger.info { "Handling delayed message. topic: $topic, mqttMessage: ${mqttMessage.toDebugString()}" }
         try {
             val (period, delayedTopic) = parseDelayedPeriodAndTopic(topic)
             delayService.delayMessage(period, delayedTopic, mqttMessage)

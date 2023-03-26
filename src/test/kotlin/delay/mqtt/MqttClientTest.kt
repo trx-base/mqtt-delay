@@ -154,4 +154,10 @@ class MqttClientTest {
         mqttClient.deliveryComplete(null)
         mqttClient.authPacketArrived(0, null)
     }
+
+    @Test
+    fun shouldRegisterCallback_whenConnect() {
+        mqttClient.connect()
+        verify { iMqttAsyncClient.setCallback(mqttClient) }
+    }
 }
