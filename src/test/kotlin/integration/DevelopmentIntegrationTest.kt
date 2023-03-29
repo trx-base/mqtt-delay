@@ -17,6 +17,9 @@ class DevelopmentIntegrationTest : AbstractIntegrationTest() {
     @Inject
     lateinit var mqttConfig: MqttConfig
 
+    @Inject
+    lateinit var objectMapper: ObjectMapper
+
     @Test
     fun shouldPublishDelayedMessage_whenPublishToDelayed_givenStringAsPayload() {
         val messageArrived = expectMessage(delayedTopic)
@@ -36,11 +39,11 @@ class DevelopmentIntegrationTest : AbstractIntegrationTest() {
 
         mqttClient.publish(
             "${mqttConfig.topic}/0/$delayedTopic",
-            MqttMessage(ObjectMapper.getDefault().writeValueAsBytes(DummyObject("first", "second"))),
+            MqttMessage(objectMapper.writeValueAsBytes(DummyObject("first", "second"))),
         )
 
-        val delayedPayload = ObjectMapper.getDefault()
-            .readValue(messageArrived.get(1, TimeUnit.SECONDS).payload, DummyObject::class.java)
+        val delayedPayload =
+            objectMapper.readValue(messageArrived.get(1, TimeUnit.SECONDS).payload, DummyObject::class.java)
         assertThat(delayedPayload).isEqualTo(DummyObject("first", "second"))
     }
 
