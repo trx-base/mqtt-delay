@@ -1,12 +1,12 @@
 package delay.service
 
-import delay.mqtt.MqttClient
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import mqtt.MqttClient
 import mu.KLogging
 import org.eclipse.paho.mqttv5.common.MqttMessage
 

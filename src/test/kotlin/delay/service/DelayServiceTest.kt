@@ -2,7 +2,6 @@ package delay.service
 
 import assertk.assertThat
 import assertk.assertions.isBetween
-import delay.mqtt.MqttClient
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -10,6 +9,7 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
+import mqtt.MqttClient
 import org.eclipse.paho.mqttv5.common.MqttMessage
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

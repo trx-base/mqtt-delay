@@ -1,4 +1,4 @@
-package delay.mqtt
+package mqtt
 
 import assertk.assertThat
 import assertk.assertions.containsOnly

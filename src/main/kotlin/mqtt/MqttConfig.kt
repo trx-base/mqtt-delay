@@ -1,4 +1,4 @@
-package delay.mqtt
+package mqtt
 
 import io.micronaut.context.annotation.ConfigurationProperties
 

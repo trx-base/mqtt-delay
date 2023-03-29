@@ -1,4 +1,4 @@
-package delay.mqtt
+package mqtt
 
 import jakarta.inject.Inject
 import jakarta.inject.Singleton

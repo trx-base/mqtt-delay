@@ -2,10 +2,10 @@ package integration
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import delay.mqtt.MqttConfig
 import io.micronaut.serde.ObjectMapper
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
+import mqtt.MqttConfig
 import org.eclipse.paho.mqttv5.common.MqttMessage
 import org.junit.jupiter.api.Test
 import util.CompletableFutureWithCounter

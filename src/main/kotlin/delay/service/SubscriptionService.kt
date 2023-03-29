@@ -1,9 +1,9 @@
 package delay.service
 
-import delay.mqtt.MqttClient
-import delay.mqtt.MqttConfig
 import io.micronaut.context.annotation.Context
 import jakarta.inject.Inject
+import mqtt.MqttClient
+import mqtt.MqttConfig
 import mu.KLogging
 import org.eclipse.paho.mqttv5.common.MqttMessage
 import javax.annotation.PostConstruct

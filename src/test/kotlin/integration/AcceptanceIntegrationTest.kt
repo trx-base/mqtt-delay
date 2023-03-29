@@ -3,13 +3,13 @@ package integration
 import assertk.assertThat
 import assertk.assertions.isBetween
 import assertk.assertions.isEqualTo
-import delay.mqtt.MqttConfig
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import mqtt.MqttConfig
 import org.eclipse.paho.mqttv5.common.MqttMessage
 import org.junit.jupiter.api.Test
 import java.util.concurrent.TimeUnit

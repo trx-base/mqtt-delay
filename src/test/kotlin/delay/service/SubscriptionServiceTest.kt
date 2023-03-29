@@ -2,8 +2,6 @@ package delay.service
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import delay.mqtt.MqttClient
-import delay.mqtt.MqttConfig
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -11,6 +9,8 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import mqtt.MqttClient
+import mqtt.MqttConfig
 import org.eclipse.paho.mqttv5.client.IMqttMessageListener
 import org.eclipse.paho.mqttv5.common.MqttMessage
 import org.junit.jupiter.api.BeforeEach

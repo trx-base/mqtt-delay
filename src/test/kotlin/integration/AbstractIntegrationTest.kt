@@ -1,8 +1,8 @@
 package integration
 
-import delay.mqtt.MqttClient
 import io.micronaut.serde.annotation.Serdeable
 import jakarta.inject.Inject
+import mqtt.MqttClient
 import org.eclipse.paho.mqttv5.common.MqttMessage
 import org.junit.jupiter.api.BeforeEach
 import util.CompletableFutureWithCounter
