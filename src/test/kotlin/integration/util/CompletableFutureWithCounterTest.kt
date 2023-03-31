@@ -1,4 +1,4 @@
-package util
+package integration.util
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo

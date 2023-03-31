@@ -1,4 +1,4 @@
-package util
+package integration.util
 
 import mu.KLogging
 import java.util.concurrent.CompletableFuture
