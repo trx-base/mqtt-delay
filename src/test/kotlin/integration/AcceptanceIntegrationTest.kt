@@ -158,4 +158,26 @@ class AcceptanceIntegrationTest : AbstractIntegrationTest() {
         }
         assertThat(elapsed).isBetween(5000, 6000)
     }
+
+//    @Test
+//    fun acceptance_05_00() {
+//        val messageArrived_topic1 = expectMessage(delayedTopic + "/topic1")
+//
+//        mqttClient.publish(
+//            "${mqttConfig.topic}/reset/5/$delayedTopic/topic1",
+//            MqttMessage("topic1".toByteArray()),
+//        )
+//        CoroutineScope(Dispatchers.IO).launch {
+//            delay(2000)
+//            mqttClient.publish(
+//                "${mqttConfig.topic}/reset/5/$delayedTopic/topic1",
+//                MqttMessage("topic1".toByteArray()),
+//            )
+//        }
+//
+//        val elapsed = measureTimeMillis {
+//            assertThat(messageArrived_topic1.get(10, TimeUnit.SECONDS).payload).isEqualTo("topic1".toByteArray())
+//        }
+//        assertThat(elapsed).isBetween(7000, 8000)
+//    }
 }

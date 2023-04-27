@@ -32,13 +32,25 @@ here: https://github.com/trx-base/traefik-docker-compose
 
 ## Subscriber
 
-### delayed/{period}/{topic}
+### delay/{period}/{topic}
 
-Delays a message to a {topic } for a given {period} in seconds.
+Delays a message to a {topic } for a given {period} in seconds. Each subsequent delay request for the same topic will be
+ignored until the delay period expires.
 
 **Example**
 
-* Topic: `delaye/5/light/activate`
+* Topic: `delay/5/light/activate`
+
+*...will delay the message to `light/activate` for 5 seconds.*
+
+### delay/reset/{period}/{topic}
+
+Delays a message to a {topic } for a given {period} in seconds. Each subsequent delay request for the same topic will
+reset the current delay to the new period.
+
+**Example**
+
+* Topic: `delay/reset/5/light/activate`
 
 *...will delay the message to `light/activate` for 5 seconds.*
 
@@ -47,28 +59,31 @@ Delays a message to a {topic } for a given {period} in seconds.
 Each separate test case begins at its own hour (e.g 03:00:00). These tests are implemented
 in `integration.AcceptanceIntegrationTest`
 
-| Subscribed     | Publish | Payload | hh:mm:ss |
-|----------------|---------|:--------|----------|
-| delay/5/topic1 |         |         | 00:00:00 |
-|                | topic1  |         | 00:00:05 |
-| delay/2/topic1 |         |         | 00:01:00 |
-|                | topic1  |         | 00:01:02 |
-| delay/5/topic1 |         |         | 01:00:00 |
-| delay/5/topic1 |         |         | 01:00:00 |
-|                | topic1  |         | 01:00:05 |
-| delay/5/topic1 |         |         | 02:00:00 |
-| delay/5/topic1 |         |         | 02:00:02 |
-| delay/5/topic1 |         |         | 02:00:04 |
-|                | topic1  |         | 02:00:05 |
-| delay/5/topic1 |         |         | 03:00:00 |
-| delay/5/topic1 |         |         | 03:00:01 |
-| delay/5/topic1 |         |         | 03:00:06 |
-|                | topic1  |         | 03:00:05 |
-|                | topic1  |         | 03:00:11 |
-| delay/5/topic1 |         |         | 04:00:00 |
-| delay/5/topic2 |         |         | 04:00:00 |
-|                | topic1  |         | 04:00:05 |
-|                | topic2  |         | 04:00:05 |
+| Subscribed           | Publish | Payload | hh:mm:ss |
+|----------------------|---------|:--------|----------|
+| delay/5/topic1       |         |         | 00:00:00 |
+|                      | topic1  |         | 00:00:05 |
+| delay/2/topic1       |         |         | 00:01:00 |
+|                      | topic1  |         | 00:01:02 |
+| delay/5/topic1       |         |         | 01:00:00 |
+| delay/5/topic1       |         |         | 01:00:00 |
+|                      | topic1  |         | 01:00:05 |
+| delay/5/topic1       |         |         | 02:00:00 |
+| delay/5/topic1       |         |         | 02:00:02 |
+| delay/5/topic1       |         |         | 02:00:04 |
+|                      | topic1  |         | 02:00:05 |
+| delay/5/topic1       |         |         | 03:00:00 |
+| delay/5/topic1       |         |         | 03:00:01 |
+| delay/5/topic1       |         |         | 03:00:06 |
+|                      | topic1  |         | 03:00:05 |
+|                      | topic1  |         | 03:00:11 |
+| delay/5/topic1       |         |         | 04:00:00 |
+| delay/5/topic2       |         |         | 04:00:00 |
+|                      | topic1  |         | 04:00:05 |
+|                      | topic2  |         | 04:00:05 |
+| delay/reset/5/topic1 |         |         | 05:00:00 |
+| delay/reset/5/topic1 |         |         | 05:00:02 |
+|                      | topic1  |         | 05:00:07 |
 
 ## Future Outlook
 
