@@ -129,4 +129,22 @@ class DevelopmentIntegrationTest : AbstractIntegrationTest() {
 
         assertThat(messageArrived.get(1, TimeUnit.SECONDS)).isEqualTo("Hello, new delay world")
     }
+
+    @Test
+    fun shouldPublishOnlyOnce_whenDelayedAgainToAlreadyDelayedTopic_withReset() {
+        val messageArrived = expectMessage(delayedTopic)
+
+        mqttClient.publish(
+            "${mqttConfig.topic}/reset/1/$delayedTopic",
+            MqttMessage("payload 1".toByteArray()),
+        )
+        mqttClient.publish(
+            "${mqttConfig.topic}/reset/1/$delayedTopic",
+            MqttMessage("payload 2".toByteArray()),
+        )
+
+        val delayedMessage = messageArrived.get(2, TimeUnit.SECONDS)
+        assertThat(String(delayedMessage.payload)).isEqualTo("payload 1")
+        assertThat(messageArrived.count).isEqualTo(1)
+    }
 }

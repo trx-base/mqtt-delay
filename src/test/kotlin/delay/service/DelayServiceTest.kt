@@ -2,6 +2,7 @@ package delay.service
 
 import assertk.assertThat
 import assertk.assertions.isBetween
+import delay.model.DelayRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -31,7 +32,7 @@ class DelayServiceTest {
     fun shouldPublishToDelayedTopic_whenGivenTopicAndMessage() {
         val expectedMessage = mockk<MqttMessage>()
 
-        delayService.delayMessage(0, "topic/to/delay", expectedMessage)
+        delayService.delayMessage(DelayRequest(0, "topic/to/delay", false, expectedMessage))
         verify(timeout = 1000) {
             mqttClient.publish(
                 "topic/to/delay",
@@ -42,7 +43,7 @@ class DelayServiceTest {
 
     @Test
     fun shouldDelayPublish_whenGivenDelayPeriod() {
-        delayService.delayMessage(2, "topic/to/delay", mockk())
+        delayService.delayMessage(DelayRequest(2, "topic/to/delay", false, mockk()))
 
         val elapsed = measureTimeMillis {
             verify(timeout = 3000) { mqttClient.publish(any(), any()) }
@@ -53,39 +54,39 @@ class DelayServiceTest {
     @Test
     fun shouldPublishDelayedTopic_whenTopic_notMarkedAsDelayed() {
         every { storageService.get("topic/to/delay") } returns null
-        delayService.delayMessage(1, "topic/to/delay", mockk())
+        delayService.delayMessage(DelayRequest(1, "topic/to/delay", false, mockk()))
         verify(timeout = 2000) { mqttClient.publish(any(), any()) }
     }
 
     @Test
     fun shouldNotPublishDelayedTopic_whenTopic_markedAsDelayed() {
         every { storageService.get("topic/to/delay") } returns "true"
-        delayService.delayMessage(2, "topic/to/delay", mockk())
+        delayService.delayMessage(DelayRequest(2, "topic/to/delay", false, mockk()))
         verify(timeout = 1000, exactly = 0) { mqttClient.publish(any(), any()) }
     }
 
     @Test
     fun shouldMarkTopicAsDelayed_whenDelayedMessage() {
-        delayService.delayMessage(2, "topic/to/delay", mockk())
+        delayService.delayMessage(DelayRequest(2, "topic/to/delay", false, mockk()))
         verify { storageService.put("topic/to/delay", "true") }
     }
 
     @Test
     fun shouldNotMarkTopicAsDelayed_whenDelayedMessage_alreadyMarkedAsDelayed() {
         every { storageService.get("topic/to/delay") } returns "true"
-        delayService.delayMessage(2, "topic/to/delay", mockk())
+        delayService.delayMessage(DelayRequest(2, "topic/to/delay", false, mockk()))
         verify(exactly = 0) { storageService.put("topic/to/delay", "true") }
     }
 
     @Test
     fun shouldMarkTopicAsDelayed_beforeDelayCountdownStarts() {
-        delayService.delayMessage(2, "topic/to/delay", mockk())
+        delayService.delayMessage(DelayRequest(2, "topic/to/delay", false, mockk()))
         verify(timeout = 500) { storageService.put("topic/to/delay", "true") }
     }
 
     @Test
     fun shouldUnmarkTopicAsDelayed_afterPublish() {
-        delayService.delayMessage(0, "topic/to/delay", mockk())
+        delayService.delayMessage(DelayRequest(0, "topic/to/delay", false, mockk()))
         verifyOrder {
             storageService.put(any(), any())
             mqttClient.publish(any(), any())

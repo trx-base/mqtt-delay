@@ -1,5 +1,6 @@
 package delay.service
 
+import delay.model.DelayRequest
 import io.micronaut.context.annotation.Context
 import jakarta.inject.Inject
 import mqtt.MqttClient
@@ -32,20 +33,20 @@ class SubscriptionService {
     fun handleDelayedMessage(topic: String, mqttMessage: MqttMessage) {
         logger.info { "Handling delayed message. topic: $topic, mqttMessage: ${mqttMessage.toDebugString()}" }
         try {
-            val (period, delayedTopic) = parseDelayedPeriodAndTopic(topic)
-            delayService.delayMessage(period, delayedTopic, mqttMessage)
+            val delayRequest = parseMqttTopic(topic, mqttMessage)
+            delayService.delayMessage(delayRequest)
         } catch (t: Throwable) {
             logger.error { t }
         }
     }
 
-    fun parseDelayedPeriodAndTopic(topic: String): Pair<Long, String> {
+    fun parseMqttTopic(topic: String, mqttMessage: MqttMessage): DelayRequest {
         try {
-            val regex = """${mqttConfig.topic}/(\d+)/(.+)""".toRegex()
+            val regex = """${mqttConfig.topic}(/reset)?/(\d+)/(.+)""".toRegex()
             val matchResult = regex.find(topic)
 
-            val (period, delayedTopic) = matchResult!!.destructured
-            return Pair(period.toLong(), delayedTopic)
+            val (action, period, delayedTopic) = matchResult!!.destructured
+            return DelayRequest(period.toLong(), delayedTopic, action == "/reset", mqttMessage)
         } catch (ex: NullPointerException) {
             throw RuntimeException("Parsing of delayed period and topic failed. Provided string: $topic", ex)
         }

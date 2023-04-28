@@ -2,6 +2,7 @@ package delay.service
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import delay.model.DelayRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -60,62 +61,99 @@ class SubscriptionServiceTest {
             "$topic/12/expected/topic",
             expectedMessage,
         )
-        verify { delayService.delayMessage(12, "expected/topic", expectedMessage) }
+        verify { delayService.delayMessage(DelayRequest(12, "expected/topic", false, expectedMessage)) }
     }
 
     @Test
     fun shouldExtractDelayPeriod_whenHandleMessage_andGivenPeriodInTopic() {
-        subscriptionService.handleDelayedMessage("${mqttConfig.topic}/42/any", mockk())
-        verify { delayService.delayMessage(42, "any", any()) }
+        val mqttMessage = mockk<MqttMessage>()
 
-        subscriptionService.handleDelayedMessage("${mqttConfig.topic}/23/any", mockk())
-        verify { delayService.delayMessage(23, "any", any()) }
+        subscriptionService.handleDelayedMessage("${mqttConfig.topic}/42/any", mqttMessage)
+        verify { delayService.delayMessage(DelayRequest(42, "any", false, mqttMessage)) }
 
-        subscriptionService.handleDelayedMessage("whatever/${mqttConfig.topic}/1878/any", mockk())
-        verify { delayService.delayMessage(1878, "any", any()) }
+        subscriptionService.handleDelayedMessage("${mqttConfig.topic}/23/any", mqttMessage)
+        verify { delayService.delayMessage(DelayRequest(23, "any", false, mqttMessage)) }
+
+        subscriptionService.handleDelayedMessage("whatever/${mqttConfig.topic}/1878/any", mqttMessage)
+        verify { delayService.delayMessage(DelayRequest(1878, "any", false, mqttMessage)) }
     }
 
     @Test
     fun shouldFail_whenHandleMessage_andPeriodNotGivenInTopic() {
         subscriptionService.handleDelayedMessage("${mqttConfig.topic}/", mockk())
-        verify(exactly = 0) { delayService.delayMessage(any(), any(), any()) }
+        verify(exactly = 0) { delayService.delayMessage(any()) }
     }
 
     @Test
     fun shouldReturnPeriodAndTopic_whenParse_andGivenTopicWithPeriod_125() {
-        assertThat(subscriptionService.parseDelayedPeriodAndTopic("root/${mqttConfig.topic}/125/target/topic")).isEqualTo(
-            Pair(
+        val mqttMessage = mockk<MqttMessage>()
+        assertThat(
+            subscriptionService.parseMqttTopic(
+                "root/${mqttConfig.topic}/125/target/topic",
+                mqttMessage,
+            ),
+        ).isEqualTo(
+            DelayRequest(
                 125L,
                 "target/topic",
+                false,
+                mqttMessage,
             ),
         )
     }
 
     @Test
     fun shouldReturnPeriodAndTopic_whenParsePeriod_andGivenTopicWithPeriod_666() {
-        assertThat(subscriptionService.parseDelayedPeriodAndTopic("root/${mqttConfig.topic}/666/target/topic")).isEqualTo(
-            Pair(
+        val mqttMessage = mockk<MqttMessage>()
+        assertThat(
+            subscriptionService.parseMqttTopic(
+                "root/${mqttConfig.topic}/666/target/topic",
+                mqttMessage,
+            ),
+        ).isEqualTo(
+            DelayRequest(
                 666L,
                 "target/topic",
+                false,
+                mqttMessage,
             ),
         )
     }
 
     @Test
     fun shouldReturnPeriodAndTopic_whenParse_andGivenTopicWith_numericRootTopic() {
-        assertThat(subscriptionService.parseDelayedPeriodAndTopic("1984/${mqttConfig.topic}/42/target/topic")).isEqualTo(
-            Pair(
-                42L,
-                "target/topic",
+        val mqttMessage = mockk<MqttMessage>()
+        assertThat(
+            subscriptionService.parseMqttTopic(
+                "1984/${mqttConfig.topic}/42/target/topic",
+                mqttMessage,
             ),
+        ).isEqualTo(
+            DelayRequest(42, "target/topic", false, mqttMessage),
+
         )
     }
 
     @Test
     fun shouldThrow_whenParsePeriod_andGivenTopicWith_invalidPeriod() {
-        assertThrows<RuntimeException> { subscriptionService.parseDelayedPeriodAndTopic("1984/${mqttConfig.topic}/4notanumber2/target/topic") }
-        assertThrows<RuntimeException> { subscriptionService.parseDelayedPeriodAndTopic("1984/${mqttConfig.topic}/nonumber/target/topic") }
-        assertThrows<RuntimeException> { subscriptionService.parseDelayedPeriodAndTopic("1984/${mqttConfig.topic}/missing/42/topic") }
+        assertThrows<RuntimeException> {
+            subscriptionService.parseMqttTopic(
+                "1984/${mqttConfig.topic}/4notanumber2/target/topic",
+                mockk(),
+            )
+        }
+        assertThrows<RuntimeException> {
+            subscriptionService.parseMqttTopic(
+                "1984/${mqttConfig.topic}/nonumber/target/topic",
+                mockk(),
+            )
+        }
+        assertThrows<RuntimeException> {
+            subscriptionService.parseMqttTopic(
+                "1984/${mqttConfig.topic}/missing/42/topic",
+                mockk(),
+            )
+        }
     }
 
     @Test
@@ -123,8 +161,32 @@ class SubscriptionServiceTest {
         val randomDelayedTopic = UUID.randomUUID().toString()
         every { mqttConfig.topic } returns randomDelayedTopic
 
-        assertThat(subscriptionService.parseDelayedPeriodAndTopic("$randomDelayedTopic/1878/another/target")).isEqualTo(
-            Pair(1878L, "another/target"),
+        val mqttMessage = mockk<MqttMessage>()
+        assertThat(
+            subscriptionService.parseMqttTopic(
+                "$randomDelayedTopic/1878/another/target",
+                mqttMessage,
+            ),
+        ).isEqualTo(
+            DelayRequest(1878L, "another/target", false, mqttMessage),
+        )
+    }
+
+    @Test
+    fun shouldReturnResetFlag_whenParse_andGivenTopicWith_reset() {
+        val mqttMessage = mockk<MqttMessage>()
+        assertThat(
+            subscriptionService.parseMqttTopic(
+                "1984/${mqttConfig.topic}/reset/42/target/topic",
+                mqttMessage,
+            ),
+        ).isEqualTo(
+            DelayRequest(
+                42L,
+                "target/topic",
+                true,
+                mqttMessage,
+            ),
         )
     }
 }
