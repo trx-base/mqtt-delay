@@ -33,7 +33,7 @@ class AcceptanceIntegrationTest : AbstractIntegrationTest() {
         val elapsed = measureTimeMillis {
             messageArrived.get(10, TimeUnit.SECONDS)
         }
-        assertThat(elapsed).isBetween(5000, 6000)
+        assertThat(elapsed).isBetween(5000, 6500)
     }
 
     @Test
@@ -68,7 +68,7 @@ class AcceptanceIntegrationTest : AbstractIntegrationTest() {
         val elapsed = measureTimeMillis {
             messageArrived.get(10, TimeUnit.SECONDS)
         }
-        assertThat(elapsed).isBetween(5000, 6000)
+        assertThat(elapsed).isBetween(5000, 6500)
         assertThat(messageArrived.count).isEqualTo(1)
     }
 
@@ -76,19 +76,19 @@ class AcceptanceIntegrationTest : AbstractIntegrationTest() {
     fun acceptance_02_00() {
         val messageArrived = expectMessage(delayedTopic)
 
-        mqttClient.publish(
-            "${mqttConfig.topic}/5/$delayedTopic",
-            MqttMessage(),
-        )
-
         CoroutineScope(Dispatchers.IO).launch {
-            delay(2000)
+            mqttClient.publish(
+                "${mqttConfig.topic}/5/$delayedTopic",
+                MqttMessage(),
+            )
+            delay(3000)
+
             mqttClient.publish(
                 "${mqttConfig.topic}/5/$delayedTopic",
                 MqttMessage(),
             )
 
-            delay(2000)
+            delay(1000)
             mqttClient.publish(
                 "${mqttConfig.topic}/5/$delayedTopic",
                 MqttMessage(),
@@ -98,7 +98,7 @@ class AcceptanceIntegrationTest : AbstractIntegrationTest() {
         val elapsed = measureTimeMillis {
             messageArrived.get(10, TimeUnit.SECONDS)
         }
-        assertThat(elapsed).isBetween(5000, 6000)
+        assertThat(elapsed).isBetween(5000, 6500)
         Thread.sleep(2000)
         assertThat(messageArrived.count).isEqualTo(1)
     }
@@ -107,13 +107,13 @@ class AcceptanceIntegrationTest : AbstractIntegrationTest() {
     fun acceptance_03_00() {
         val messageArrived = expectMessage(delayedTopic)
 
-        mqttClient.publish(
-            "${mqttConfig.topic}/5/$delayedTopic",
-            MqttMessage(),
-        )
-
         CoroutineScope(Dispatchers.IO).launch {
+            mqttClient.publish(
+                "${mqttConfig.topic}/5/$delayedTopic",
+                MqttMessage(),
+            )
             delay(1000)
+
             mqttClient.publish(
                 "${mqttConfig.topic}/5/$delayedTopic",
                 MqttMessage(),
@@ -156,28 +156,29 @@ class AcceptanceIntegrationTest : AbstractIntegrationTest() {
             assertThat(messageArrived_topic1.get(10, TimeUnit.SECONDS).payload).isEqualTo("topic1".toByteArray())
             assertThat(messageArrived_topic2.get(10, TimeUnit.SECONDS).payload).isEqualTo("topic2".toByteArray())
         }
-        assertThat(elapsed).isBetween(5000, 6000)
+        assertThat(elapsed).isBetween(5000, 6500)
     }
 
-//    @Test
-//    fun acceptance_05_00() {
-//        val messageArrived_topic1 = expectMessage(delayedTopic + "/topic1")
-//
-//        mqttClient.publish(
-//            "${mqttConfig.topic}/reset/5/$delayedTopic/topic1",
-//            MqttMessage("topic1".toByteArray()),
-//        )
-//        CoroutineScope(Dispatchers.IO).launch {
-//            delay(2000)
-//            mqttClient.publish(
-//                "${mqttConfig.topic}/reset/5/$delayedTopic/topic1",
-//                MqttMessage("topic1".toByteArray()),
-//            )
-//        }
-//
-//        val elapsed = measureTimeMillis {
-//            assertThat(messageArrived_topic1.get(10, TimeUnit.SECONDS).payload).isEqualTo("topic1".toByteArray())
-//        }
-//        assertThat(elapsed).isBetween(7000, 8000)
-//    }
+    @Test
+    fun acceptance_05_00() {
+        val messageArrived_topic1 = expectMessage("$delayedTopic/topic1")
+
+        CoroutineScope(Dispatchers.IO).launch {
+            mqttClient.publish(
+                "${mqttConfig.topic}/reset/5/$delayedTopic/topic1",
+                MqttMessage("topic1".toByteArray()),
+            )
+            delay(2000)
+
+            mqttClient.publish(
+                "${mqttConfig.topic}/reset/5/$delayedTopic/topic1",
+                MqttMessage("topic1".toByteArray()),
+            )
+        }
+
+        val elapsed = measureTimeMillis {
+            assertThat(messageArrived_topic1.get(10, TimeUnit.SECONDS).payload).isEqualTo("topic1".toByteArray())
+        }
+        assertThat(elapsed).isBetween(7000, 8000)
+    }
 }

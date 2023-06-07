@@ -6,6 +6,8 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
+import kotlinx.coroutines.CoroutineScope
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -27,19 +29,22 @@ internal class StorageServiceTest {
 
     @Test
     fun shouldReturnValue_whenGet_givenExistingEntryInEngine() {
-        storageService.engine.put("key-42", "Expected value")
-        assertThat(storageService.get("key-42")).isEqualTo("Expected value")
+        val expected = mockk<CoroutineScope>()
+        storageService.engine.put("key-42", expected)
+        assertThat(storageService.get("key-42")).isEqualTo(expected)
     }
 
     @Test
     fun shouldPersistValueInEngine_whenPut() {
-        storageService.put("key-42", "Expected value")
-        assertThat(storageService.engine.get("key-42")).isEqualTo("Expected value")
+        val expected = mockk<CoroutineScope>()
+        storageService.put("key-42", expected)
+        assertThat(storageService.engine.get("key-42")).isEqualTo(expected)
     }
 
     @Test
     fun shouldRemoveEntryFromStorage_whenRemove() {
-        storageService.put("key-42", "A value")
+        val expected = mockk<CoroutineScope>()
+        storageService.put("key-42", expected)
         storageService.remove("key-42")
         assertThat(storageService.get("key-42")).isNull()
     }

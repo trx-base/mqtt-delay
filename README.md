@@ -69,7 +69,7 @@ in `integration.AcceptanceIntegrationTest`
 | delay/5/topic1       |         |         | 01:00:00 |
 |                      | topic1  |         | 01:00:05 |
 | delay/5/topic1       |         |         | 02:00:00 |
-| delay/5/topic1       |         |         | 02:00:02 |
+| delay/5/topic1       |         |         | 02:00:03 |
 | delay/5/topic1       |         |         | 02:00:04 |
 |                      | topic1  |         | 02:00:05 |
 | delay/5/topic1       |         |         | 03:00:00 |
